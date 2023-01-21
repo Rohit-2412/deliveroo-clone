@@ -1,9 +1,29 @@
 import { View, Text, ScrollView } from 'react-native'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { ArrowRightIcon } from 'react-native-heroicons/outline'
 import RestaurantCard from './RestaurantCard'
+import sanityClient from '../sanity'
 
 const FeaturedRow = ({ id, title, desc }) => {
+
+    const [restaurant, setRestaurant] = useState([])
+
+    useEffect(() => {
+        sanityClient.fetch(`
+        *[_type == "featured" && _id == $id] {
+            ...,
+            restaurants[]->{
+              ...,
+                dishes[]->,
+              type->{
+                name
+              }
+            },
+          }[0]`, { id }).then(data => {
+            setRestaurant(data?.restaurants)
+        })
+    }, [id])
+
     return (
         <View>
             <View className="mt-4 flex-row items-center justify-between flex-1">
@@ -20,66 +40,26 @@ const FeaturedRow = ({ id, title, desc }) => {
 
                 className="pt-1"
             >
-                <RestaurantCard
-                    id={"1"}
-                    imgUrl="https://links.papareact.com/gn7"
-                    title="Yo! Sushi"
-                    rating={4.5}
-                    genre="Japanese"
-                    address="123 High St"
-                    short_desc="This is short description"
-                    dishes={["Sushi", "Japanese", "Asian"]}
-                    long={-0.0255}
-                    lat={51.5416}
-                />
-                <RestaurantCard
-                    id={"1"}
-                    imgUrl="https://links.papareact.com/gn7"
-                    title="Yo! Sushi"
-                    rating={4.5}
-                    genre="Japanese"
-                    address="123 High St"
-                    short_desc="This is short description"
-                    dishes={["Sushi", "Japanese", "Asian"]}
-                    long={-0.0255}
-                    lat={51.5416}
-                />
-                <RestaurantCard
-                    id={"1"}
-                    imgUrl="https://links.papareact.com/gn7"
-                    title="Yo! Sushi"
-                    rating={4.5}
-                    genre="Japanese"
-                    address="123 High St"
-                    short_desc="This is short description"
-                    dishes={["Sushi", "Japanese", "Asian"]}
-                    long={-0.0255}
-                    lat={51.5416}
-                />
-                <RestaurantCard
-                    id={"1"}
-                    imgUrl="https://links.papareact.com/gn7"
-                    title="Yo! Sushi"
-                    rating={4.5}
-                    genre="Japanese"
-                    address="123 High St"
-                    short_desc="This is short description"
-                    dishes={["Sushi", "Japanese", "Asian"]}
-                    long={-0.0255}
-                    lat={51.5416}
-                />
-                <RestaurantCard
-                    id={"1"}
-                    imgUrl="https://links.papareact.com/gn7"
-                    title="Yo! Sushi"
-                    rating={4.5}
-                    genre="Japanese"
-                    address="123 High St"
-                    short_desc="This is short description"
-                    dishes={["Sushi", "Japanese", "Asian"]}
-                    long={-0.0255}
-                    lat={51.5416}
-                />
+
+                {/* Restaurants card */}
+                {restaurant?.map((item) => {
+                    return (
+                        <RestaurantCard
+                            key={item._id}
+                            id={item._id}
+                            imgUrl={item.image}
+                            title={item.name}
+                            rating={item.rating}
+                            genre={item.type?.name}
+                            address={item.address}
+                            short_desc={item.short_desc}
+                            dishes={item.dishes}
+                            long={item.long}
+                            lat={item.lat}
+                        />
+                    )
+                })}
+
             </ScrollView>
         </View>
     )
