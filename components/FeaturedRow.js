@@ -52,7 +52,7 @@ const FeaturedRow = ({ id, title, desc }) => {
                             rating={item.rating}
                             genre={item.type?.name}
                             address={item.address}
-                            short_desc={item.short_desc}
+                            desc={item.desc}
                             dishes={item.dishes}
                             long={item.long}
                             lat={item.lat}
