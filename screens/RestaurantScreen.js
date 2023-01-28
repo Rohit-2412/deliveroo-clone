@@ -6,9 +6,13 @@ import { ArrowLeftIcon, StarIcon, MapPinIcon, ChevronRightIcon } from 'react-nat
 import { QuestionMarkCircleIcon } from 'react-native-heroicons/outline'
 import DishRow from '../components/DishRow'
 import BasketIcon from '../components/BasketIcon'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { setRestaurant } from '../features/restaurantSlice'
 
 const RestaurantScreen = () => {
     const navigation = useNavigation()
+    const dispatch = useDispatch()
 
     const { params: {
         id,
@@ -22,6 +26,19 @@ const RestaurantScreen = () => {
         long,
         lat
     } } = useRoute()
+
+    useEffect(() => {
+        dispatch(setRestaurant({
+            id,
+            imgUrl,
+            title,
+            rating,
+            genre,
+            address,
+            desc,
+            dishes,
+        }))
+    }, [dispatch])
 
     useLayoutEffect(() => {
 
